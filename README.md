@@ -1,16 +1,50 @@
 # TESS Pipeline for TTV
 
 End-to-end pipeline for fitting TESS transit times and searching for Transit
-Timing Variations (TTVs) on warm-Jupiter candidates.  Downloads light curves
-with [lightkurve](https://docs.lightkurve.org), selects per-transit cutout
-windows with Transit Least Squares + Gaussian dip refinement, then jointly
-fits the transit shape and per-window mid-transit times with NumPyro / JAX
-using [jaxoplanet](https://jax.exoplanet.codes) and [tinygp](https://tinygp.readthedocs.io).
+Timing Variations (TTVs) in warm-Jupiter candidates.
 
-The post-processing step fits a linear ephemeris by weighted MLE *and* a
-sinusoidal TTV model
-$t_n = T_0 + nP + A\sin\!\big(\frac{2\pi(T_0+nP)}{P_{\mathrm{TTV}}} + \varphi\big)$
-and reports the $\chi^2$ improvement from the sinusoid.
+The pipeline downloads TESS light curves with
+[lightkurve](https://docs.lightkurve.org), selects per-transit cutout windows
+using Transit Least Squares (TLS) plus Gaussian dip refinement, and jointly fits
+the transit shape and per-window mid-transit times with NumPyro / JAX using
+[jaxoplanet](https://jax.exoplanet.codes) and
+[tinygp](https://tinygp.readthedocs.io).
+
+The post-processing step estimates a linear ephemeris by weighted maximum
+likelihood and compares it with a sinusoidal TTV model,
+
+$$
+t_n =
+T_0 + nP +
+A \sin\left(
+\frac{2\pi (T_0+nP)}{P_{\mathrm{TTV}}}+ \varphi
+\right),
+$$
+
+where $n$ is the transit epoch, $T_0$ is the reference mid-transit time,
+$P$ is the linear orbital period, $A$ is the TTV amplitude,
+$P_{\mathrm{TTV}}$ is the sinusoidal TTV period, and $\varphi$ is the phase.
+The pipeline reports the improvement in $\chi^2$ relative to the linear
+ephemeris.
+
+## Pipeline overview
+
+For each target, the pipeline performs the following steps:
+
+1. Read one target from `data/WJs.csv`.
+2. Download available TESS light curves using `lightkurve`.
+3. Identify candidate transit windows using TLS and/or the catalogue ephemeris.
+4. Refine the approximate transit centers using a Gaussian dip template.
+5. Fit all selected windows jointly with a shared transit-shape model and
+   per-window mid-transit times.
+6. Estimate the best-fit linear ephemeris from the fitted mid-transit times.
+7. Construct the O-C diagram relative to the linear ephemeris.
+8. Fit an optional sinusoidal TTV model and report the $\Delta\chi^2$
+   improvement.
+
+The main scientific output is a set of fitted mid-transit times, their
+uncertainties, an O-C diagram, and a quantitative comparison between a linear
+ephemeris and a sinusoidal TTV model.
 
 ## Layout
 
@@ -121,7 +155,7 @@ updates the `latest` symlink atomically once finished.
 | `RUN_TIMESTAMP`              | now     | force a specific run-directory timestamp                     |
 | `TLS_MIN_DURATION_COVERAGE`  | 0.85    | reject window when < 85% of duration is observed             |
 | `TLS_MIN_TC_SCORE`           | 0.02    | reject window when the Gaussian-template score is below this |
-| `TLS_MAX_TC_SHIFT_FRAC`      | 0.5     | reject window if `|tc_fit − tc_linear| > frac × duration`    |
+| `TLS_MAX_TC_SHIFT_FRAC`      | 0.5     | reject window if `\|tc_fit − tc_linear\| > frac × duration`    |
 | `TLS_EPHEM_ONLY`             | 0       | skip the TLS global search when an ephemeris is given        |
 | `TLS_USE_EPHEM_PRIOR`        | 1       | seed window selection from the catalogue ephemeris           |
 | `DOWNLOAD_MAX_TRIES`         | 3       | per-sector download retry budget                             |
@@ -152,5 +186,3 @@ updates the `latest` symlink atomically once finished.
 }
 ```
 
-`delta_chi2_vs_linear` is the central goodness-of-fit signal: at 3 extra free
-parameters, Δχ² > 7.8 ≈ 2σ and Δχ² > 14.2 ≈ 3σ for a real periodic TTV.
