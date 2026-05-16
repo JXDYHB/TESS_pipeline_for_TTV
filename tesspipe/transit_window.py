@@ -547,31 +547,16 @@ def _save_oc_plot(windows: list, outdir: Path, tic_id, mode_tag: str = "tls_ttv"
 def collect_windows(
     sectors,
     sector_data: dict,
-    tic: float = 120.0,
-    W: int = 30,
-    k_sigma: float = 3.0,
-    min_run: int = 3,
-    max_candidates_per_sector: int = 30,
-    depth_lo: float = 0.01,
-    depth_hi: float = 0.03,
     duration_hours=None,
     period_days_prior=None,
     t0_days_prior=None,
     time=None,
     min_duration_coverage: float = 0.6,
     window: float = 0.5,
-    n_low: int = 15,
-    refine_halfspan_cadences: int = 3,
-    n_scan: int = 21,
-    min_pairs: int = 8,
-    baseline_frac: float = 0.70,
-    baseline_min_pts: int = 10,
     max_windows_per_sector: int = 10,
     debug: bool = False,
-    print_diagnostics: bool = False,
     tic_id=None,
     run_index=None,
-    output_root=None,
 ) -> list:
     """Collect transit windows using ephemeris-first logic with TLS fallback.
 
@@ -582,11 +567,7 @@ def collect_windows(
         int(run_index) if run_index is not None
         else (int(tic_id) if tic_id is not None else 0)
     )
-    pics_root = (
-        Path(output_root) / "tls" / "pics" / str(idx_for_path)
-        if output_root is not None
-        else Path("results") / "tls" / "pics" / str(idx_for_path)
-    )
+    pics_root = Path("results") / "tls" / "pics" / str(idx_for_path)
 
     cfg = _WindowBuildConfig(
         window=float(window),

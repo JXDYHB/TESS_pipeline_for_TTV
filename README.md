@@ -72,7 +72,7 @@ TTV_Analysis_For_TESS/
 ```
 OUTPUT/
 ├── slurm/                                 # raw SLURM logs (gitignored)
-└── tic_<TIC>/mode<M>/
+└── tic_<TIC>_index_<INDEX>/mode<M>/
     ├── latest -> runs/<latest TS>/
     └── runs/<YYYYMMDD-HHMMSS>/
         ├── idata.pkl, windows.pkl
@@ -80,7 +80,8 @@ OUTPUT/
         ├── oc.png                         # linear-ephemeris O-C
         ├── oc_sinusoidal.png              # sinusoidal TTV overlay
         ├── corner.png                     # posterior pair plot
-        └── fit/window_NNN.png             # per-transit fit diagnostics
+        ├── fit/window_NNN.png             # per-transit fit diagnostics
+        └── slurm/slurm_<JOB>_<INDEX>.{log,err}
 ```
 
 ## Installation
@@ -132,7 +133,7 @@ Re-run only the post-processing on an existing run (no MCMC redo):
 
 ```bash
 python -m tesspipe.data_display \
-    --run-dir OUTPUT/tic_334811204/mode1/latest
+    --run-dir OUTPUT/tic_334811204_index_17/mode1/latest
 ```
 
 ## SLURM batch usage
@@ -144,8 +145,8 @@ in `WJs.csv` you want to process, optionally override `MODE` via env var, and:
 sbatch scripts/mcmc_ast.sbatch
 ```
 
-Each array task produces its own `tic_<TIC>/mode<M>/runs/<TS>/` directory and
-updates the `latest` symlink atomically once finished.
+Each array task produces its own `tic_<TIC>_index_<INDEX>/mode<M>/runs/<TS>/`
+directory and updates the `latest` symlink atomically once finished.
 
 ## Environment-variable overrides
 

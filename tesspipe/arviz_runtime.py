@@ -6,7 +6,6 @@ transient tmp-file collisions.  The lock is process-local; it does not
 provide cross-node protection.
 """
 
-import os
 from pathlib import Path
 
 try:

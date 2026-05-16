@@ -288,25 +288,14 @@ def build_model_mcmc(
     max_windows_per_sector: int = 10,
 
     # Window selection parameters.
-    W: int = 30,
-    k_sigma: float = 3.0,
-    min_run: int = 3,
     depth_lo: float = 0.01,
     depth_hi: float = 0.03,
-    baseline_frac: float = 0.70,
     debug_windows: bool = False,
     duration_hours=None,
     period_days_prior=None,
     t0_days_prior=None,
     time=None,
     min_duration_coverage: float = 0.60,
-
-    # Centre-refinement parameters.
-    n_low: int = 15,
-    refine_halfspan_cadences: int = 3,
-    n_scan: int = 21,
-    min_pairs: int = 8,
-    baseline_min_pts: int = 10,
 
     # MCMC parameters.
     num_warmup: int = 400,
@@ -402,20 +391,7 @@ def build_model_mcmc(
     windows = _collect_windows(
         sectors=sectors,
         sector_data=sector_data,
-        tic=float(tic_label),
-        W=int(W),
-        k_sigma=float(k_sigma),
-        min_run=int(min_run),
-        max_candidates_per_sector=30,
-        depth_lo=float(depth_lo),
-        depth_hi=float(depth_hi),
         window=float(window),
-        n_low=int(n_low),
-        refine_halfspan_cadences=int(refine_halfspan_cadences),
-        n_scan=int(n_scan),
-        min_pairs=int(min_pairs),
-        baseline_frac=float(baseline_frac),
-        baseline_min_pts=int(baseline_min_pts),
         duration_hours=float(duration_hours) if duration_hours is not None else None,
         period_days_prior=float(period_days_prior) if period_days_prior is not None else None,
         t0_days_prior=float(t0_days_prior) if t0_days_prior is not None else None,
@@ -423,7 +399,6 @@ def build_model_mcmc(
         min_duration_coverage=float(min_duration_coverage),
         max_windows_per_sector=int(max_windows_per_sector),
         debug=bool(debug_windows),
-        print_diagnostics=False,
         tic_id=tic_id,
         run_index=run_index,
     )

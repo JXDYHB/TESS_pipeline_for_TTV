@@ -30,7 +30,7 @@ OUTPUT_ROOT = Path("OUTPUT")
 
 # Output layout:
 #   OUTPUT/
-#   └── tic_<TIC>/mode<M>/
+#   └── tic_<TIC>_index_<INDEX>/mode<M>/
 #       ├── latest -> runs/<latest TS>/
 #       └── runs/<YYYYMMDD-HHMMSS>/
 #           ├── idata.pkl, windows.pkl, summary.json
@@ -87,22 +87,6 @@ def _parse_manual_t0(text: str | None) -> list | None:
     return out if out else None
 
 
-def _estimate_period_from_t0(t0_list) -> float | None:
-    """Rough period estimate from a list of observed transit times."""
-    if t0_list is None:
-        return None
-    t = np.sort(np.asarray(t0_list, float))
-    t = t[np.isfinite(t)]
-    if t.size < 2:
-        return None
-    dt = np.diff(t)
-    dt = dt[np.isfinite(dt) & (dt > 0)]
-    if dt.size == 0:
-        return None
-    p = float(np.median(dt))
-    return p if np.isfinite(p) and p > 0 else None
-
-
 def _import_elapsed_s() -> float:
     """Seconds since TESSPIPE_IMPORT_T0 was set."""
     try:
@@ -115,9 +99,10 @@ def _import_elapsed_s() -> float:
 # Result persistence
 # ---------------------------------------------------------------------------
 
-def _make_run_dir(tic_id: int, mode: int, run_timestamp: str) -> Path:
-    """Build (and create) the canonical run directory for this target+mode."""
-    run_dir = OUTPUT_ROOT / f"tic_{tic_id}" / f"mode{mode}" / "runs" / run_timestamp
+def _make_run_dir(tic_id: int, row_index: int, mode: int, run_timestamp: str) -> Path:
+    """Build (and create) the canonical run directory for this row+target+mode."""
+    target_dir = f"tic_{tic_id}_index_{row_index}"
+    run_dir = OUTPUT_ROOT / target_dir / f"mode{mode}" / "runs" / run_timestamp
     run_dir.mkdir(parents=True, exist_ok=True)
     return run_dir
 
@@ -180,7 +165,7 @@ def main():
         raise IndexError(f"Index {row_index} out of bounds for CSV with {len(df)} rows")
     row    = df.iloc[row_index]
     tic_id = int(row["TIC"])
-    run_dir = _make_run_dir(tic_id, mode, run_timestamp)
+    run_dir = _make_run_dir(tic_id, row_index, mode, run_timestamp)
 
     depth_ppm      = float(row["Depth (ppm)"])
     depth_err_ppm  = float(row["Depth_err (ppm)"])
@@ -224,16 +209,13 @@ def main():
         window=window_days,
         sectors=sectors,
         max_windows_per_sector=10,
-        W=60, k_sigma=3.0, min_run=3,
         depth_lo=depth_lo, depth_hi=depth_hi,
-        baseline_frac=0.70,
         duration_hours=duration_hours,
         period_days_prior=period_days,
         t0_days_prior=t0_days_prior,
         time=manual_time,
         min_duration_coverage=0.85,
         debug_windows=True,
-        n_low=15, refine_halfspan_cadences=3, n_scan=21, min_pairs=8, baseline_min_pts=10,
         num_warmup=1500, num_samples=1000, num_chains=num_chains,
         target_accept_prob=0.92, max_tree_depth=10,
         rng_seed=0, platform="cpu", enable_x64=False,

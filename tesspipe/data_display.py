@@ -565,9 +565,6 @@ def save_fit_plots(
     out_dir.mkdir(parents=True, exist_ok=True)
     post = idata.posterior
 
-    if "ttv_P" in post.data_vars:
-        p_fixed = float(posterior_scalar(post, "ttv_P", use=use))
-
     # Shared transit parameters (present when the mode doesn't have per-window versions).
     r_shared         = posterior_scalar(post, "r",         use=use) if "r"         in post.data_vars else None
     b_shared         = posterior_scalar(post, "b",         use=use) if "b"         in post.data_vars else None
@@ -623,15 +620,12 @@ def save_fit_plots(
         delta_grid = transit_delta(t_grid_rel, p_fixed, duration_k, r_k, b_k, q1_k, q2_k, t0_rel)
 
         # Compute baseline trend: GP if available, quadratic otherwise.
-        has_gp_k     = f"gp_amp_{k}" in post.data_vars and f"gp_ell_{k}" in post.data_vars
-        has_gp_shared = "gp_amp" in post.data_vars and "gp_ell" in post.data_vars
-        trend_label   = "Trend"
+        has_gp_k    = f"gp_amp_{k}" in post.data_vars and f"gp_ell_{k}" in post.data_vars
+        trend_label = "Trend"
 
-        if (has_gp_k or has_gp_shared) and GaussianProcess is not None and quasisep is not None:
-            amp_k = posterior_scalar(post, "gp_amp", k=k, use=use) if has_gp_k \
-                    else posterior_scalar(post, "gp_amp", use=use)
-            ell_k = posterior_scalar(post, "gp_ell", k=k, use=use) if has_gp_k \
-                    else posterior_scalar(post, "gp_ell", use=use)
+        if has_gp_k and GaussianProcess is not None and quasisep is not None:
+            amp_k = posterior_scalar(post, "gp_amp", k=k, use=use)
+            ell_k = posterior_scalar(post, "gp_ell", k=k, use=use)
 
             ferr = np.asarray(w.get("f_err", []), float).ravel()
             ferr = ferr[np.isfinite(ferr) & (ferr > 0)]
@@ -728,6 +722,40 @@ def save_fit_plots(
         saved.append(str(p))
 
     return saved
+
+
+def _choose_plot_period(idata, windows: list, p_hint: float | None = None, use: str = "median") -> float:
+    """Return a safe positive period for per-window diagnostic plots."""
+    if p_hint is not None:
+        try:
+            p_hint = float(p_hint)
+            if np.isfinite(p_hint) and p_hint > 0:
+                return p_hint
+        except Exception:
+            pass
+
+    for w in windows:
+        try:
+            p_win = float(w.get("tls_period", np.nan))
+            if np.isfinite(p_win) and p_win > 0:
+                return p_win
+        except Exception:
+            continue
+
+    if len(windows) >= 2:
+        try:
+            rows = get_abs_t0_and_rows(idata, windows, use=use, ref_key="tc_fit")
+            t_obs = np.asarray([r["t0_abs"] for r in rows], float)
+            t_obs = t_obs[np.isfinite(t_obs)]
+            if t_obs.size >= 2:
+                dt = np.diff(np.sort(t_obs))
+                dt = dt[np.isfinite(dt) & (dt > 0)]
+                if dt.size > 0:
+                    return float(np.median(dt))
+        except Exception:
+            pass
+
+    return 1.0
 
 
 # ---------------------------------------------------------------------------
@@ -894,12 +922,14 @@ def save_corner_plot(idata, out_path: Path) -> str | None:
 
 def _tic_from_run_dir(run_dir: Path) -> int | None:
     """Recover the TIC ID from a run-dir of the form
-    ``OUTPUT/tic_<TIC>/mode<M>/runs/<TS>/`` — returns ``None`` on failure.
+    ``OUTPUT/tic_<TIC>[_index_<INDEX>]/mode<M>/runs/<TS>/`` — returns
+    ``None`` on failure.
     """
     for part in run_dir.resolve().parts:
         if part.startswith("tic_"):
+            tic_text = part[len("tic_"):].split("_index_", 1)[0]
             try:
-                return int(part[len("tic_"):])
+                return int(tic_text)
             except ValueError:
                 return None
     return None
@@ -937,6 +967,21 @@ def run_post_processing(
         idata = _load_pickle(idata_file)
         print(f"[load] {windows_file}")
         windows = _load_pickle(windows_file)
+
+    fit_dir      = run_dir / "fit"
+    oc_path      = run_dir / "oc.png"
+    oc_sine_path = run_dir / "oc_sinusoidal.png"
+    cor_path     = run_dir / "corner.png"
+    fit_images   = []
+
+    # Save per-window diagnostics before the ephemeris stage. This keeps the
+    # transit fit images available even if candidate-period scoring fails.
+    try:
+        p_plot = _choose_plot_period(idata, windows, use="median")
+        fit_images = save_fit_plots(windows, idata, p_fixed=p_plot, out_dir=fit_dir, use="median")
+        print(f"[Saved] fit plots     -> {fit_dir}  ({len(fit_images)} files, provisional)")
+    except Exception as e:
+        print(f"[WARN] provisional fit plots failed: {e}")
 
     tic_id  = _tic_from_run_dir(run_dir)
     p_prior = get_period_prior_from_wjs(tic_id, wjs_csv)
@@ -1014,12 +1059,12 @@ def run_post_processing(
         print("[sine] not enough transits for a sinusoidal TTV fit (need ≥ 4).")
 
     # --- Plots --------------------------------------------------------------
-    fit_dir      = run_dir / "fit"
-    oc_path      = run_dir / "oc.png"
-    oc_sine_path = run_dir / "oc_sinusoidal.png"
-    cor_path     = run_dir / "corner.png"
+    try:
+        fit_images = save_fit_plots(windows, idata, p_fixed=p_best, out_dir=fit_dir, use="median")
+        print(f"[Saved] fit plots     -> {fit_dir}  ({len(fit_images)} files)")
+    except Exception as e:
+        print(f"[WARN] final fit plot refresh failed: {e}")
 
-    fit_images = save_fit_plots(windows, idata, p_fixed=p_best, out_dir=fit_dir, use="median")
     save_oc_plot(
         epoch, oc_min, sigma_min, keep_u, sector, oc_path,
         p_fit=p_fit, p_err=p_err, redchi2=redchi2,
@@ -1093,7 +1138,6 @@ def run_post_processing(
         json.dump(payload, f, indent=2)
 
     print(f"[Saved] summary       -> {out_json}")
-    print(f"[Saved] fit plots     -> {fit_dir}  ({len(fit_images)} files)")
     print(f"[Saved] O-C           -> {oc_path}")
     if sine is not None:
         print(f"[Saved] O-C (sine)    -> {oc_sine_path}")
