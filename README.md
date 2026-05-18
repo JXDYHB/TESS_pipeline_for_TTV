@@ -84,6 +84,13 @@ OUTPUT/
         └── slurm/slurm_<JOB>_<INDEX>.{log,err}
 ```
 
+## Example outputs
+
+Small example outputs are included under `examples/output/`.  These examples
+keep the human-readable diagnostics (`summary.json`, O-C plots, corner plots,
+per-window fit plots, and available Slurm logs), but omit the large
+regenerable `idata.pkl` and `windows.pkl` files.
+
 ## Installation
 
 Tested on Python 3.12.  Using [uv](https://docs.astral.sh/uv/):
@@ -186,4 +193,3 @@ directory and updates the `latest` symlink atomically once finished.
   "files": { … }
 }
 ```
-

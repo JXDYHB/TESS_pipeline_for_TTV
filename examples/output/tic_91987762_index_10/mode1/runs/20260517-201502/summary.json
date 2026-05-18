@@ -1,0 +1,36 @@
+{
+  "tic_id": 91987762,
+  "p_prior": 45.5221234,
+  "ephemeris": {
+    "p_grid": 45.52217531599727,
+    "p_grid_min": 36.41769872,
+    "p_grid_max": 54.62654808,
+    "p_mle": 45.52215185144756,
+    "p_mle_err": 4.948369875843566e-05,
+    "t0_mle": 1894.2538416229079,
+    "t0_mle_err": 0.0006002514996325726,
+    "chi2": 0.43142118657448214,
+    "dof": 1,
+    "redchi2": 0.43142118657448214,
+    "chi2_kept": 0.43142118657448214,
+    "dof_kept": 1,
+    "redchi2_kept": 0.43142118657448214
+  },
+  "sinusoidal_ttv": null,
+  "windows": {
+    "n_total": 3,
+    "n_kept": 3
+  },
+  "files": {
+    "idata": "idata.pkl",
+    "windows": "windows.pkl",
+    "oc": "oc.png",
+    "oc_sinusoidal": null,
+    "corner": "corner.png",
+    "fit": [
+      "fit/window_000.png",
+      "fit/window_001.png",
+      "fit/window_002.png"
+    ]
+  }
+}

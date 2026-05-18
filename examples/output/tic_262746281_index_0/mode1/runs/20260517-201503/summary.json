@@ -1,0 +1,54 @@
+{
+  "tic_id": 262746281,
+  "p_prior": 16.1797573,
+  "ephemeris": {
+    "p_grid": 16.179811441458114,
+    "p_grid_min": 12.94380584,
+    "p_grid_max": 19.415708759999998,
+    "p_mle": 16.179815013387756,
+    "p_mle_err": 2.6753309379198678e-05,
+    "t0_mle": 1523.794341818937,
+    "t0_mle_err": 0.001775016293050815,
+    "chi2": 5.555049035239231,
+    "dof": 6,
+    "redchi2": 0.9258415058732052,
+    "chi2_kept": 5.555049035239231,
+    "dof_kept": 6,
+    "redchi2_kept": 0.9258415058732052
+  },
+  "sinusoidal_ttv": {
+    "T0": 1523.7976118482811,
+    "P": 16.179770210140088,
+    "A_days": 0.0037846783200271134,
+    "A_minutes": 5.449936780839043,
+    "P_ttv_days": 94.14603871781559,
+    "phi_rad": -2.3943085408314944,
+    "n_free_params": 5,
+    "chi2": 0.17163456273593028,
+    "dof": 3,
+    "redchi2": 0.05721152091197676,
+    "delta_chi2_vs_linear": 5.3834144725033015,
+    "lm_converged": true
+  },
+  "windows": {
+    "n_total": 8,
+    "n_kept": 8
+  },
+  "files": {
+    "idata": "idata.pkl",
+    "windows": "windows.pkl",
+    "oc": "oc.png",
+    "oc_sinusoidal": "oc_sinusoidal.png",
+    "corner": "corner.png",
+    "fit": [
+      "fit/window_000.png",
+      "fit/window_001.png",
+      "fit/window_002.png",
+      "fit/window_003.png",
+      "fit/window_004.png",
+      "fit/window_005.png",
+      "fit/window_006.png",
+      "fit/window_007.png"
+    ]
+  }
+}

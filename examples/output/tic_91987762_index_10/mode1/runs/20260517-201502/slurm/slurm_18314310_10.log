@@ -1,0 +1,108 @@
+==========================================
+Job ID         : 18314310
+Array task     : 10
+Node           : cn011.delta.ncsa.illinois.edu
+CPU cores      : 1  (chains: 1)
+Mode           : 1
+Run timestamp  : 20260517-201502
+Start          : Sun May 17 20:15:02 CDT 2026
+==========================================
+[INFO] TIC 91987762  mode=1  chains=1
+[INFO] run_dir = OUTPUT/tic_91987762_index_10/mode1/runs/20260517-201502
+[import] tesspipe ok (+324.4s)
+[run] downloading TIC 91987762 ...
+[download_sector] TIC 91987762 sector 21 exptime=120s author=SPOC (try 1/3)
+[download_sector] TIC 91987762 sector 45 exptime=120s author=SPOC (try 1/3)
+[download_sector] TIC 91987762 sector 46 exptime=120s author=SPOC (try 1/3)
+[download_sector] TIC 91987762 sector 48 exptime=120s author=SPOC (try 1/3)
+[download_sector] TIC 91987762 sector 72 exptime=20s author=SPOC (try 1/3)
+[download_sector] Done. Downloaded 5 sector(s) for TIC 91987762.
+[run] downloaded 5 sector(s): [21, 45, 46, 48, 72]
+[run] per-sector exptime (s): {21: 120.0, 45: 120.0, 46: 120.0, 48: 120.0, 72: 20.0}
+JAX devices: [CpuDevice(id=0)]
+[build_model_mcmc] sigma_sector_map: {21: 0.0002624584436416626, 45: 0.0002659932374954224, 46: 0.00026431421041488645, 48: 0.00024814252853393555, 72: 0.0004990245223045348}
+[build_model_mcmc] duration prior: TruncNormal(loc=0.1675 d, σ=0.02512 d, [0.067, 0.4187])
+[build_model_mcmc] radius-ratio prior: r ∈ [0.05493, 0.05768] (depth ∈ [0.003017, 0.003123])
+[import] tesspipe.transit_window ok (+502.5s)
+[EPHEM prior] P=45.522123 t0=2531.564000 dur=0.167500
+[P-fixed] using prior period directly: P=45.52212340
+[cut_window] source=ephem_prior sector=21 tc_linear=1894.254272 tc_fit=1894.254272 cov=1.000 score=0.7536 shift=0.0000d
+[cut_window] source=ephem_prior sector=45 tc_linear=2531.564000 tc_fit=2531.567015 cov=0.995 score=0.7778 shift=0.0030d
+[cut_window] source=ephem_prior sector=46 tc_linear=2577.086123 tc_fit=2577.086123 cov=0.995 score=0.7621 shift=0.0000d
+[TLS cap] downsampled to 994 points (step=13)
+[TLS range] period_min=40.9699 period_max=50.0743
+[EPHEM prior] TLS_EPHEM_ONLY=1; skipping TLS search.
+[TLS dedup] 6 -> 3 windows
+[TLS refit-linear] P=45.52221721 t0=2531.56542283
+[TLS+TTV] P0=45.51910840 dP=-4.307e-04 d/epoch
+[build_model_mcmc] collected windows: 3
+[build_model_mcmc] mode=1 (tinygp-per-window)
+[build_model_mcmc] noise groups — sectors=[21, 45, 46] authors=['SPOC'] cadences=['120s'] default_σ=0.0002704
+[import] tesspipe.modes.mode1 ok (+546.8s)
+[build_model_mcmc] mcmc.run start (warmup=1500, samples=1000, chains=1)
+[build_model_mcmc] mcmc.run done
+
+                         mean           std        median          5.0%         95.0%         n_eff         r_hat
+              b   0.7750570774   0.0178453457   0.7750313282   0.7444760203   0.8024901152 517.2686988640   1.0005640984
+           c0_0   0.9999898076   0.0000555545   0.9999928474   0.9999035001   1.0000623465 699.9938847286   0.9997779727
+           c0_1   1.0000042915   0.0000361237   1.0000044107   0.9999482632   1.0000640154 950.3832188514   0.9990049601
+           c0_2   1.0000262260   0.0000294777   1.0000257492   0.9999833703   1.0000742674 1109.9286777297   0.9990077019
+       duration   0.1806739271   0.0016086552   0.1805967540   0.1780971140   0.1832313836 551.5678806759   1.0000265837
+       gp_amp_0   0.0000648461   0.0000448146   0.0000568609   0.0000012771   0.0001224131 457.6048084299   1.0006434917
+       gp_amp_1   0.0000475213   0.0000380779   0.0000403243   0.0000002802   0.0000959138 504.1260195438   1.0022766590
+       gp_amp_2   0.0000329465   0.0000283352   0.0000254907   0.0000000695   0.0000712419 642.6215742267   1.0000150204
+       gp_ell_0   0.0736974999   0.0389299802   0.0717918202   0.0035875561   0.1277265102 423.2199823134   1.0006357431
+       gp_ell_1   0.0584584959   0.0377530232   0.0533293858   0.0029587834   0.1127370447 688.2417722795   0.9992271066
+       gp_ell_2   0.0647894591   0.0381126180   0.0613305047   0.0029705281   0.1173583567 904.7434641652   0.9990713000
+           logD  -1.7111008167   0.0088947695  -1.7114886045  -1.7254263163  -1.6970055103 551.1005542623   1.0000337362
+           logR  -2.8880434036   0.0094717639  -2.8896720409  -2.9015200138  -2.8737404346 513.2227152751   0.9993470311
+             q1   0.1891633421   0.0472874977   0.1852798164   0.1064411253   0.2553115785 513.4193652898   0.9992257953
+             q2   0.6097914577   0.2281954885   0.6194373369   0.2950550020   0.9987607002 469.0110763757   0.9990504980
+              r   0.0556875616   0.0005293362   0.0555944443   0.0549396463   0.0564872436 513.1398164958   0.9993523955
+      sigma_jit   0.0001756245   0.0000265739   0.0001805287   0.0001421124   0.0002149825 461.2042427196   1.0038487911
+
+                           mean       std    median      5.0%     95.0%     n_eff     r_hat
+                    b      0.78      0.02      0.78      0.74      0.80    517.27      1.00
+                 c0_0      1.00      0.00      1.00      1.00      1.00    699.99      1.00
+                 c0_1      1.00      0.00      1.00      1.00      1.00    950.38      1.00
+                 c0_2      1.00      0.00      1.00      1.00      1.00   1109.93      1.00
+             duration      0.18      0.00      0.18      0.18      0.18    551.57      1.00
+             gp_amp_0      0.00      0.00      0.00      0.00      0.00    457.60      1.00
+             gp_amp_1      0.00      0.00      0.00      0.00      0.00    504.13      1.00
+             gp_amp_2      0.00      0.00      0.00      0.00      0.00    642.62      1.00
+             gp_ell_0      0.07      0.04      0.07      0.00      0.13    423.22      1.00
+             gp_ell_1      0.06      0.04      0.05      0.00      0.11    688.24      1.00
+             gp_ell_2      0.06      0.04      0.06      0.00      0.12    904.74      1.00
+                 logR     -2.89      0.01     -2.89     -2.90     -2.87    513.22      1.00
+                   q1      0.19      0.05      0.19      0.11      0.26    513.42      1.00
+                   q2      0.61      0.23      0.62      0.30      1.00    469.01      1.00
+            sigma_jit      0.00      0.00      0.00      0.00      0.00    461.20      1.00
+sigma_sector_extra[0]      0.00      0.00      0.00      0.00      0.00    459.55      1.01
+sigma_sector_extra[1]      0.00      0.00      0.00      0.00      0.00    337.84      1.00
+sigma_sector_extra[2]      0.00      0.00      0.00      0.00      0.00    530.02      1.00
+                 t0_0     -0.00      0.00     -0.00     -0.00      0.00    804.29      1.00
+                 t0_1     -0.00      0.00     -0.00     -0.00     -0.00    763.64      1.00
+                 t0_2     -0.00      0.00     -0.00     -0.00      0.00   1090.03      1.00
+
+Number of divergences: 0
+[import] arviz ok (+5459.2s)
+[INFO] MCMC finished
+[Saved] OUTPUT/tic_91987762_index_10/mode1/runs/20260517-201502/idata.pkl
+[Saved] OUTPUT/tic_91987762_index_10/mode1/runs/20260517-201502/windows.pkl
+[Saved] fit plots     -> /work/hdd/bfoc/zyan10/TTV_Analysis_For_TESS/OUTPUT/tic_91987762_index_10/mode1/runs/20260517-201502/fit  (3 files, provisional)
+[post] TIC=91987762  P_prior=45.5221234
+[post] N transits = 3   baseline = 682.83 d
+[grid] P_best=45.52217532 d  score=1.023 chi2=0.469  range=[36.4177, 54.6265]
+[mask] kept 3/3
+[MLE] P  = 45.52215185 ± 4.95e-05 d   T0 = 1894.253842 ± 0.000600
+[MLE] chi2/dof = 0.43/1 = 0.431
+[sine] not enough transits for a sinusoidal TTV fit (need ≥ 4).
+[Saved] fit plots     -> /work/hdd/bfoc/zyan10/TTV_Analysis_For_TESS/OUTPUT/tic_91987762_index_10/mode1/runs/20260517-201502/fit  (3 files)
+[Saved] summary       -> /work/hdd/bfoc/zyan10/TTV_Analysis_For_TESS/OUTPUT/tic_91987762_index_10/mode1/runs/20260517-201502/summary.json
+[Saved] O-C           -> /work/hdd/bfoc/zyan10/TTV_Analysis_For_TESS/OUTPUT/tic_91987762_index_10/mode1/runs/20260517-201502/oc.png
+[Saved] corner        -> /work/hdd/bfoc/zyan10/TTV_Analysis_For_TESS/OUTPUT/tic_91987762_index_10/mode1/runs/20260517-201502/corner.png
+[DONE] latest -> 20260517-201502
+==========================================
+End            : Sun May 17 21:47:54 CDT 2026
+Exit status    : 0
+==========================================
